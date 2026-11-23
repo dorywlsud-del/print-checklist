@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>해내미 PDF 안전 확인판</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <img class="logo" src="img/logo.png" alt="해냄에듀">
+    <span class="brand-sep" aria-hidden="true"></span>
+    <img class="apptitle" src="img/title.png" alt="해내미 PDF 안전 확인판">
+  </div>
+  <div class="filename" id="fileName"></div>
+  <div class="actions">
+    <button class="btn" id="btnOpen" type="button">PDF 열기</button>
+    <button class="btn ghost" id="btnPrint" type="button" disabled>결과 인쇄 / PDF 저장</button>
+  </div>
+  <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+</header>
+<div class="hazard" aria-hidden="true"></div>
+
+<section class="settings" id="settings" aria-label="검사 기준">
+  <div class="field">
+    <span class="lbl">인쇄 방식</span>
+    <div class="seg" data-key="mode">
+      <button type="button" data-v="press">인쇄소 (재단)</button>
+      <button type="button" data-v="office">사무용 프린터</button>
+    </div>
+  </div>
+  <div class="field">
+    <span class="lbl">색상</span>
+    <div class="seg" data-key="color">
+      <button type="button" data-v="color">컬러</button>
+      <button type="button" data-v="mono">흑백</button>
+    </div>
+  </div>
+  <label class="field">
+    <span class="lbl">목표 판형</span>
+    <select data-key="target" id="selTarget"><option value="auto">자동 (가장 많은 크기)</option></select>
+  </label>
+  <label class="field">
+    <span class="lbl">제본</span>
+    <select data-key="binding">
+      <option value="none">없음 / 낱장</option>
+      <option value="saddle">중철 (스테이플)</option>
+      <option value="perfect">무선 (책)</option>
+    </select>
+  </label>
+  <label class="field num"><span class="lbl">도련</span><input type="number" data-key="bleedMM" min="0" max="10" step="0.5"><em>mm</em></label>
+  <label class="field num"><span class="lbl">안전여백</span><input type="number" data-key="safeMM" min="0" max="15" step="0.5"><em>mm</em></label>
+  <label class="field num"><span class="lbl">해상도 주의</span><input type="number" data-key="dpiWarn" min="50" max="1200" step="10"><em>dpi</em></label>
+  <label class="field num"><span class="lbl">해상도 오류</span><input type="number" data-key="dpiErr" min="30" max="600" step="10"><em>dpi</em></label>
+  <button type="button" class="link" id="btnReset">기본값</button>
+</section>
+
+<main id="main">
+  <div class="drop" id="drop">
+    <div class="hero">
+      <svg class="hook" viewBox="0 0 120 92" aria-hidden="true">
+        <path d="M60 0v34" stroke="#30383C" stroke-width="7"/>
+        <circle cx="60" cy="44" r="11" fill="none" stroke="#30383C" stroke-width="7"/>
+        <path d="M52 52 18 92M68 52l34 40" stroke="#30383C" stroke-width="6" stroke-linecap="round"/>
+      </svg>
+      <div class="board">
+        <div class="board-stripe" aria-hidden="true"></div>
+        <div class="board-body">
+          <img class="board-helmet" src="img/helmet.png" alt="">
+          <h1 class="board-title"><img src="img/title.png" alt="해내미 PDF 안전 확인판"></h1>
+          <p class="board-lead">인쇄소에 넘기기 전, PDF 안전 점검부터!</p>
+          <div class="dropbox">
+            <svg viewBox="0 0 48 48" width="44" height="44" aria-hidden="true"><path d="M14 6h14l10 10v24a2 2 0 0 1-2 2H14a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z" fill="#fff" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/><path d="M28 6v10h10M24 22v12M18.5 28.5 24 34l5.5-5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <p class="drop-title">검사할 PDF를 여기에 끌어다 놓으세요</p>
+            <p class="drop-sub"><button type="button" class="btn" id="btnPick">파일 선택</button></p>
+            <p class="drop-note">파일은 이 컴퓨터 밖으로 전송되지 않습니다</p>
+          </div>
+          <ul class="drop-list">
+            <li>판형·방향·페이지 수</li><li>도련·안전여백</li><li>글꼴 포함 여부</li><li>이미지 해상도·형식</li>
+            <li>RGB / CMYK · 별색</li><li>중복인쇄 · 분판</li><li>빈 페이지 · 가는 선</li><li>주석 · 레이어 · 보안</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <img class="deco deco-sign" src="img/safety-sign.png" alt="">
+    <img class="deco deco-mascot" src="img/mascot.png" alt="">
+    <img class="deco deco-cone" src="img/cone.png" alt="">
+  </div>
+
+  <div class="workspace" id="workspace" hidden>
+    <aside class="report" id="report">
+      <div class="verdict" id="verdict"></div>
+      <dl class="docinfo" id="docinfo"></dl>
+      <div class="checks" id="checks"></div>
+      <p class="foot">※ 자동 검사는 보조 수단입니다. 최종 교정은 실제 출력물로 확인하세요.</p>
+    </aside>
+
+    <section class="stage" id="stage">
+      <div class="stage-bar">
+        <div class="progress" id="progress"><div class="progress-fill" id="progressFill"></div><span id="progressText"></span></div>
+        <div class="toggles">
+          <label><input type="checkbox" id="tgTrim" checked> 재단선·도련</label>
+          <label><input type="checkbox" id="tgSafe" checked> 안전선</label>
+          <label><input type="checkbox" id="tgIssue" checked> 문제 위치</label>
+          <label><input type="checkbox" id="tgOnly"> 문제 페이지만</label>
+          <label class="zoom">크기 <input type="range" id="zoom" min="140" max="460" value="230"></label>
+        </div>
+        <div class="filterbar" id="filterbar" hidden><span id="filterText"></span><button type="button" class="link" id="btnClearFilter">전체 보기</button></div>
+      </div>
+      <div class="grid" id="grid"></div>
+    </section>
+  </div>
+</main>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal-head">
+      <button type="button" class="btn ghost sm" id="mPrev" aria-label="이전 페이지">‹</button>
+      <h2 id="mTitle"></h2>
+      <button type="button" class="btn ghost sm" id="mNext" aria-label="다음 페이지">›</button>
+      <div class="seg mtabs" id="mTabs">
+        <button type="button" data-v="print">인쇄 미리보기</button>
+        <button type="button" data-v="sep">분판 미리보기</button>
+      </div>
+      <span class="spacer"></span>
+      <button type="button" class="btn ghost sm" id="mClose" aria-label="닫기">닫기 ✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-view" id="mView"></div>
+      <div class="modal-side" id="mSide"></div>
+    </div>
+  </div>
+</div>
+
+<script src="lib/pdf.min.js"></script>
+<script src="lib/pdf.worker.min.js"></script>
+<script src="lib/pdf-lib.min.js"></script>
+<script src="lib/pdf.worker.code.js"></script>
+<script src="lib/pdf.cmaps.js"></script>
+<script src="js/common.js"></script>
+<script src="js/structure.js"></script>
+<script src="js/separation.js"></script>
+<script src="js/raster.js"></script>
+<script src="js/rules.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
