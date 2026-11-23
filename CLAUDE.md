@@ -66,3 +66,9 @@
 - 디자인: 팔레트 버터 #FFE9A1 / 크림 #FFF8EF / 차콜 #30383C / 주황 #F8A448 / 초록 #408054 / 고깔 #F0532B. 제목 서체(SD시네마극장)는 AI에 부분 포함돼 있어 이미지로 사용, 소제목은 비슷한 Black Han Sans(fonts/에 포함, 인터넷 불필요). 디자인 소스가 바뀌면 scratchpad의 design/extract.js로 이미지 재추출.
 - 분판 한계: 화면 색은 근사치(색 관리 미적용), RGB는 단순 변환으로 CMYK에 분배, 인라인 이미지·Type3 글꼴은 원래 색 그대로. 큰 이미지가 있는 페이지는 분판 생성에 10~20초(이미지를 판마다 다시 디코딩).
 - 자동 테스트: scratchpad에서 playwright-core + 설치된 Chrome으로 `file://` 실행해 검증함.
+
+## Git / 배포
+- 작업 후 커밋·푸시는 자동으로 한다 (사용자 지시, 2026-11-23). 저장소는 **공개** → 비밀번호·키 등은 절대 올리지 말 것
+- 이미지자동화 → github.com/dorywlsud-del/image-automation, 인쇄체크리스트 → github.com/dorywlsud-del/print-checklist
+- 사이트: https://haenaem-tools.vercel.app (/upscale, /book-preview, /pdf-check). 도구 HTML(결과물)이 바뀌면 `work/haenaem-tools`에서 `node 업데이트.js` → 커밋·푸시하면 Vercel 사이트가 자동 갱신
+- PDF·.ai가 깨지지 않도록 `.gitattributes`(`* -text`)·core.autocrlf=false 유지
